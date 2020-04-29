@@ -20,6 +20,10 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+
+            $table->string('nickname')->default('')->comment('微信昵称');
+            $table->string('phone')->default('')->comment('手机号');
+
             $table->timestamps();
         });
     }
