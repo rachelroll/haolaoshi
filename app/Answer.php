@@ -7,8 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Answer extends Model
 {
 
+    protected $connection = 'mysql';
+    protected $table = 'answers';
+    protected $guarded = [];
+
     public function question()
     {
-        return $this->belongsTo('App\Questions');
+        return $this->belongsTo(Questions::class, 'question_id', 'id');
     }
+
+
 }
