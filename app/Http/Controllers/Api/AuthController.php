@@ -17,9 +17,10 @@ class AuthController extends BaseController
         $session = $app->auth->session($code);
         $openid = $session['openid'];
         //$openid = "oFYRe5Q9G-nWbU30V9T_V19xV2YQ";
-        $user = User::firstOrCreate(['openid' => $openid]);
-
-        $user->login_time = now();
+        $user = User::firstOrCreate(
+            ['openid' => $openid],
+            ['login_time' => now()]
+        );
 
         $token = $user->createToken('Token Name')->accessToken;
 
