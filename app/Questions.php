@@ -18,7 +18,6 @@ class Questions extends Model
 
     public const STATUS = ['待支付', '匹配老师中', '进行中', '已结束'];
 
-
     /**
      * The "booted" method of the model.
      *

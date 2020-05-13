@@ -17,15 +17,20 @@ class QuestionController extends BaseController
     public function list()
     {
         $subject_id = request()->get('subject_id', 0);
+        $role = request()->get('role', 0);
 
         $condition = [];
-        if ($subject_id) {
+        if ($subject_id != 0) {
             $condition = [
                 'subject_id' => $subject_id,
             ];
         }
 
-        $questions = Questions::has('answers', '>=', 1)->where($condition)->get();
+        if ($role == 1) { // 学生
+            $questions = Questions::has('answers', '>=', 1)->where($condition)->get();
+        } elseif ($role == 0) {
+            $questions = Questions::doesntHave('answers')->where($condition)->orderBy('id', 'DESC')->get();
+        }
 
         $data = [];
         $questions->where('type',0)->chunk(2)->each(static function ($i)  use (&$data) {

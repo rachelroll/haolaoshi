@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Questions;
+use App\Teacher;
 use App\User;
 use EasyWeChat\Factory;
 use Illuminate\Http\Request;
@@ -27,5 +28,14 @@ class AuthController extends BaseController
         return $this->success([
             'token'=>$token,
         ]);
+    }
+
+    public function checkToken()
+    {
+        $user_id = request()->user()->id;
+
+        if ($user_id) {
+            return $this->success('未过期');
+        }
     }
 }
