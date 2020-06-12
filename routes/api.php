@@ -41,8 +41,17 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         Route::get('questions/orderList', 'QuestionController@orderList')->name('api.questions.orderList');
         Route::get('questions/orderShow/{id}', 'QuestionController@orderShow')->name('api.questions.orderShow');
         Route::post('questions/studentReply', 'QuestionController@studentReply')->name('api.questions.studentReply');
+        Route::post('questions/teacherReply', 'QuestionController@teacherReply')->name('api.questions.teacherReply');
+
         Route::post('users/roleCreate', 'UserController@roleCreate')->name('api.users.roleCreate');
+        Route::post('users/setting', 'UserController@setting')->name('api.users.setting');
         Route::get('users/getRole', 'UserController@getRole')->name('api.users.getRole');
+        Route::get('users/getGrade', 'UserController@getGrade')->name('api.users.getGrade');
         Route::post('auth/checkToken', 'AuthController@checkToken')->name('api.auth.checkToken');
+
+        // 老师注册表单提交
+        Route::post('teacher/register', 'TeacherController@register')->name('api.teacher.register');
+        // 老师表单创建
+        Route::get('teacher/registerCreate', 'TeacherController@registerCreate')->name('api.teacher.registerCreate');
     });
 });

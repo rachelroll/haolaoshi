@@ -46,6 +46,8 @@ class QuestionController extends BaseController
                     'thumbs'     => $item->thumbs,
                     'created_at' => $item->created_at,
                     'type'       => $item->type,
+                    'grade'      => Questions::GRADE[$item->grade],
+                    'price'      => $item->total_price
                 ];
 
             });
@@ -68,6 +70,8 @@ class QuestionController extends BaseController
                 'thumbs'     => $item->thumbs,
                 'created_at' => $item->created_at,
                 'type'       => $item->type,
+                'grade'      => Questions::GRADE[$item->grade],
+                'price'      => $item->total_price
             ];
         });
 
@@ -90,17 +94,16 @@ class QuestionController extends BaseController
                     'voice_reply',
                     'photos',
                     'type',
-                    'teacher_id',
                     'question_id',
                     'created_at',
                 ])->orderBy('created_at', 'DESC');
             },
-            'teacher' => function ($query) {
-                $query->select([
-                    'id',
-                    'avatar'
-                ]);
-            }
+            //'teacher' => function ($query) {
+            //    $query->select([
+            //        'id',
+            //        'avatar'
+            //    ]);
+            //}
         ])->select()->find($id);
 
         $pics = [];
@@ -120,7 +123,6 @@ class QuestionController extends BaseController
             'subject_id' => $question->subject_id,
             'thumbs' => $question->thumbs,
             'created_at' => $date,
-            'teacher_avatar' => env('CDN_DOMAIN') . '/haolaoshi/' . $question->teacher->avatar
         ];
 
         $data = [
@@ -130,14 +132,25 @@ class QuestionController extends BaseController
         $question->answers->each(static function ($item) use (&$data) {
             $date = new Carbon($item->created_at);
             $date = $date->format('Y-m-d H:i');
+            $content = '';
+            switch ($item->ctype) {
+                case 1:
+                    $content = $item->content;
+                    break;
+                case 2:
+                    $content = env('CDN_DOMAIN') . '/haolaoshi/' . $item->content;
+                    break;
+                case 3:
+                    $content = env('CDN_DOMAIN') . '/haolaoshi/voice' . $item->content;
+                    break;
+            }
             $data['answers'][] = [
-                'content'     => $item->content,
-                'voice_reply' => $item->voice_reply,
-                'photos'      => [env('CDN_DOMAIN') . '/haolaoshi/' . $item->photos],
+                'content'     => $content,
                 'type'        => $item->type,
-                'teacher_id'  => $item->teacher_id,
+                'user_id'  => $item->user_id,
                 'question_id' => $item->question_id,
                 'created_at'  => $date,
+                'ctype' => $item->ctype,
             ];
         });
 
@@ -153,6 +166,7 @@ class QuestionController extends BaseController
         return $this->success($res);
     }
 
+    // 创建一条问题
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -173,6 +187,8 @@ class QuestionController extends BaseController
         $subject_id = request()->get('subject', 0);
         $content = request()->get('content', '');
         $published = request()->get('published', 1);
+
+        $user = User::find($user_id);
 
         $photos_count = count($photos);
 
@@ -198,6 +214,7 @@ class QuestionController extends BaseController
             'content' => $content,
             'published' => $published,
             'type' => $type,
+            'grade' => $user->grade,
         ]);
 
         if ($res) {
@@ -281,20 +298,12 @@ class QuestionController extends BaseController
             'answers' => function ($query) {
                 $query->select([
                     'content',
-                    'voice_reply',
-                    'photos',
                     'type',
-                    'teacher_id',
                     'question_id',
+                    'user_id',
                     'created_at',
+                    'ctype'
                 ])->orderBy('id', 'ASC');
-            },
-            'teacher' => function ($query) {
-                $query->select([
-                    'id',
-                    'avatar',
-                    'name'
-                ]);
             },
             'user' => function ($query) {
                 $query->select([
@@ -344,15 +353,10 @@ class QuestionController extends BaseController
         $question->answers->each(static function ($item) use (&$msgs, $question, $count, &$i) {
             $date = new Carbon($item->created_at);
             $date = $date->format('Y/m/d H:i');
-            if($item->type == 0) {
-                $id = $item->teacher_id;
-                $name = $question->teacher->name;
-                $face = env('CDN_DOMAIN') . '/haolaoshi/' . $question->teacher->avatar;
-            }else {
-                $id = $question->user->id;
-                $name = $question->user->nickname;
-                $face = env('CDN_DOMAIN') . '/haolaoshi/' . $question->user->avatar;
-
+            $user_id = $item->user_id;
+            $name = $item->user->nickname;
+            $face = env('CDN_DOMAIN') . '/haolaoshi/' . $question->user->avatar;
+            if($item->type == 1) {
                 if ($i <= $count + 1) {
                     $msgs[] = [
                         'ctype' => 4,
@@ -363,28 +367,25 @@ class QuestionController extends BaseController
                 }
             }
 
-            if ($item->photos) {
-                $ctype = 2;
-                $msg = env('CDN_DOMAIN') . '/haolaoshi/' . $item->photos;
-            } elseif ($item->voice_reply) {
-                $ctype = 3;
-                $msg = $item->voice_reply;
+            if ($item->ctype == 2) {
+                $msg = env('CDN_DOMAIN') . '/haolaoshi/' . $item->content;
+            } elseif ($item->ctype == 3) {
+                $msg = $item->content;
             } else {
-                $ctype = 1;
                 $msg = $item->content;
             }
 
             $msgs[] = [
-                'ctype' => $ctype,
+                'ctype' => $item->ctype,
                 'face' => $face,
                 'msg' => $msg,
                 'name' => $name,
                 'date' => $date,
-                'id' => $id,
+                'id' => $user_id,
             ];
         });
 
-        $imuserid = $question->user->id;
+        $imuserid = request()->user()->id;
         $status = $question->status;
 
         return $this->success(compact('msgs', 'imuserid', 'status', 'count', 'time_count'));
@@ -395,7 +396,6 @@ class QuestionController extends BaseController
         $content = request()->get('content', '');
         $user_id = request()->user()->id;
         $question_id = request()->get('question_id', '');
-        $teacher_id = Questions::find($question_id)->teacher_id;
         $ctype = request()->get('ctype', '');
 
         $count = Answer::where([
@@ -413,7 +413,6 @@ class QuestionController extends BaseController
                 'user_id' => $user_id,
                 'type' => 1,
                 'question_id' => $question_id,
-                'teacher_id' => $teacher_id,
                 'times' => $count + 2,
             ]);
 
@@ -447,5 +446,35 @@ class QuestionController extends BaseController
         } else {
             return $this->failed('本次提问已结束');
         }
+    }
+
+    public function teacherReply()
+    {
+        $content = request()->get('content', '');
+        $user_id = request()->user()->id;
+        $question_id = request()->get('question_id', '');
+        $ctype = request()->get('ctype', '');
+
+        $msg = Answer::create([
+            'user_id' => $user_id,
+            'type' => 0,
+            'question_id' => $question_id,
+            'content' => $content,
+            'ctype' => $ctype
+        ]);
+
+        $date = new Carbon($msg->created_at);
+        $date = $date->format('Y/m/d H:i');
+
+        $data = [
+            'ctype' => $ctype,
+            'face' => env('CDN_DOMAIN') . '/haolaoshi/' . request()->user()->avatar,
+            'msg' => $msg->content,
+            'name' => request()->user()->nickname,
+            'date' => $date,
+            'id' => request()->user()->id,
+        ];
+
+        return $this->success($data);
     }
 }

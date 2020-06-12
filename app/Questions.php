@@ -15,6 +15,20 @@ class Questions extends Model
     ];
 
     public const SUBJECT_NAME = ['全部', '语文', '数学', '英语', '物理', '生物', '化学', '历史', '地理'];
+    public const GRADE = [
+        '一年级',
+        '二年级',
+        '三年级',
+        '四年级',
+        '五年级',
+        '六年级',
+        '初一',
+        '初二',
+        '初三',
+        '高一',
+        '高二',
+        '高三',
+    ];
 
     public const STATUS = ['待支付', '匹配老师中', '进行中', '已结束'];
 
