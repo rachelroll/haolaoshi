@@ -14,8 +14,8 @@ class Questions extends Model
         'photos' => 'array'
     ];
 
-    public const SUBJECT_NAME = ['全部', '语文', '数学', '英语', '物理', '生物', '化学', '历史', '地理'];
-    public const GRADE = [
+    protected const SUBJECT_NAME = ['全部', '语文', '数学', '英语', '物理', '生物', '化学', '历史', '地理'];
+    protected const GRADE = [
         '一年级',
         '二年级',
         '三年级',
