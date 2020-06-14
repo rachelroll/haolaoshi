@@ -269,10 +269,10 @@ class QuestionController extends BaseController
     // 学生/老师查看自己的答疑列表
     public function orderList()
     {
-        $user_id = request()->user()->id;
         $role = request()->get('role', 1);
+        $user_id = request()->user()->id;
 
-        if($role) {
+        if($role) { // 学生
             $questions = Questions::with('teacher')->where('user_id', $user_id)->get();
 
             $data = [];
@@ -295,9 +295,8 @@ class QuestionController extends BaseController
                     'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
                 ];
             });
-        } else {
+        } else { // 老师
             $questions = Questions::with('user')->where('teacher_id', $user_id)->get();
-
             $data = [];
             $questions->each(static function ($item) use(&$data) {
                 $date = new Carbon($item->created_at);
@@ -315,7 +314,6 @@ class QuestionController extends BaseController
                 ];
             });
         }
-
 
         return $this->success($data);
     }

@@ -38,7 +38,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         Route::post('questions/photo', 'QuestionController@photo')->name('api.questions.photo');
         // 创建问题
         Route::post('questions/create', 'QuestionController@create')->name('api.questions.create');
-        Route::get('questions/orderList', 'QuestionController@orderList')->name('api.questions.orderList');
+        Route::post('questions/orderList', 'QuestionController@orderList')->name('api.questions.orderList');
         Route::get('questions/orderShow/{id}', 'QuestionController@orderShow')->name('api.questions.orderShow');
         Route::post('questions/studentReply', 'QuestionController@studentReply')->name('api.questions.studentReply');
         Route::post('questions/teacherReply', 'QuestionController@teacherReply')->name('api.questions.teacherReply');
