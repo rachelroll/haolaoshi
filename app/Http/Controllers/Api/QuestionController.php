@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Answer;
+use App\Http\Controllers\WeChatController;
 use App\Questions;
 use App\User;
 use Carbon\Carbon;
+use EasyWeChat\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -219,6 +221,9 @@ class QuestionController extends BaseController
         ]);
 
         if ($res) {
+            $wxpay = new WeChatController();
+            $result = $wxpay->unifiedOrder($res->id, 2000, $user->openid);
+
             return $this->success('提交成功');
         }
     }
@@ -477,5 +482,51 @@ class QuestionController extends BaseController
         ];
 
         return $this->success($data);
+    }
+
+    public function teacherConfirmToAnswer()
+    {
+        $question_id = request()->get('question_id', '');
+
+        $question = Questions::where('id', $question_id)->update([
+            'teacher_id', request()->user()->id
+        ]);
+
+        $student_id = $question->user_id;
+
+        $student = User::find($student_id);
+
+        if ($question) {
+            $data = [
+                'template_id' => 'qJOnRTHZeNDnwq8v6pHrusuz6TA7TTcWZNJTV5ay4dY', // 所需下发的订阅模板id
+                'touser' => $student->openid,     // 接收者（用户）的 openid
+                'page' => '',       // 点击模板卡片后的跳转页面，仅限本小程序内的页面。支持带参数,（示例index?foo=bar）。该字段不填则模板无跳转。
+                'data' => [         // 模板内容，格式形如 { "key1": { "value": any }, "key2": { "value": any } }
+                    'name2' => [
+                        'value' => request()->user()->name, // 回复者
+                    ],
+                    'time3' => [
+                        'value' => date('Y-m-d', time()) , // 回复时间
+                    ],
+                    'thing4' => [
+                        'value' => '提问已匹配到老师, 正在整理打字中, 预计30分钟内回复.', // 回复内容
+                    ],
+                    'thing5' => [
+                        'value' => '如有疑问' // 温馨提示
+                    ],
+                    'date6' => [
+                        'value' => date('Y-m-d', $question->created_at)  // 提问时间
+                    ]
+                ],
+            ];
+
+            $config = config('wechat.payment.default');
+
+            $app = Factory::payment($config);
+
+            $app->subscribe_message->send($data);
+
+            return $this->success('接单成功');
+        }
     }
 }

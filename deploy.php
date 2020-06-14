@@ -31,8 +31,6 @@ host('oeaudio.com')
     ->set('deploy_path', '/var/www/{{application}}')
     ->stage('staging');
 
-
-
 // Tasks
 
 task('build', function () {

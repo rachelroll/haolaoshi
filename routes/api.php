@@ -42,6 +42,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         Route::get('questions/orderShow/{id}', 'QuestionController@orderShow')->name('api.questions.orderShow');
         Route::post('questions/studentReply', 'QuestionController@studentReply')->name('api.questions.studentReply');
         Route::post('questions/teacherReply', 'QuestionController@teacherReply')->name('api.questions.teacherReply');
+        Route::post('questions/teacherConfirmToAnswer', 'QuestionController@teacherConfirmToAnswer')->name('api.questions.teacherConfirmToAnswer');
 
         Route::post('users/roleCreate', 'UserController@roleCreate')->name('api.users.roleCreate');
         Route::post('users/setting', 'UserController@setting')->name('api.users.setting');
