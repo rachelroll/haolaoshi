@@ -18,7 +18,7 @@ class WeChatController extends Controller
             'body' => '咖啡猫在线-答题付费',
             'out_trade_no' => $order_id,
             'total_fee' => $total_fee,
-            'trade_type' => 'JSAPI', // 请对应换成你的支付方式对应的值类型
+            'trade_type' => 'JSAPI',
             'openid' => $openid,
         ]);
 

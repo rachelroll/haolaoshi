@@ -56,3 +56,6 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         Route::get('teacher/registerCreate', 'TeacherController@registerCreate')->name('api.teacher.registerCreate');
     });
 });
+
+// 微信支付回调
+Route::post('wechat/wechat-notify', 'WechatController@wechat-notify')->name('wechat.wechat-notify');
