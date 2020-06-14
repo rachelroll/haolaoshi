@@ -266,33 +266,56 @@ class QuestionController extends BaseController
         }
     }
 
-    // 学生查看自己的答疑列表
+    // 学生/老师查看自己的答疑列表
     public function orderList()
     {
         $user_id = request()->user()->id;
+        $role = request()->get('role', 1);
 
-        $questions = Questions::with('teacher')->where('user_id', $user_id)->get();
+        if($role) {
+            $questions = Questions::with('teacher')->where('user_id', $user_id)->get();
 
-        $data = [];
-        $questions->each(static function ($item) use(&$data) {
-            $date = new Carbon($item->created_at);
-            $date = $date->format('Y/m/d H:i');
+            $data = [];
+            $questions->each(static function ($item) use(&$data) {
+                $date = new Carbon($item->created_at);
+                $date = $date->format('Y/m/d H:i');
 
-            $teacher_name = NULL;
-            $teacher_avatar = NULL;
-            if ($item->teacher) {
-                $teacher_name = $item->teacher->name;
-                $teacher_avatar = env('CDN_DOMAIN') . '/haolaoshi/' . $item->teacher->avatar;
-            }
-            $data[] = [
-                'id' => $item->id,
-                'teacher_name' => $teacher_name,
-                'teacher_avatar' => $teacher_avatar,
-                'status' => Questions::STATUS[$item->status],
-                'date' => $date,
-                'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
-            ];
-        });
+                $teacher_name = NULL;
+                $teacher_avatar = NULL;
+                if ($item->teacher_id) {
+                    $teacher_name = $item->teacher->name;
+                    $teacher_avatar = env('CDN_DOMAIN') . '/haolaoshi/' . $item->teacher->avatar;
+                }
+                $data[] = [
+                    'id' => $item->id,
+                    'name' => $teacher_name,
+                    'avatar' => $teacher_avatar,
+                    'status' => Questions::STATUS[$item->status],
+                    'date' => $date,
+                    'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
+                ];
+            });
+        } else {
+            $questions = Questions::with('user')->where('teacher_id', $user_id)->get();
+
+            $data = [];
+            $questions->each(static function ($item) use(&$data) {
+                $date = new Carbon($item->created_at);
+                $date = $date->format('Y/m/d H:i');
+
+                $student_name = $item->user->nickname;
+                $student_avatar = env('CDN_DOMAIN') . '/haolaoshi/' . $item->user->avatar;
+                $data[] = [
+                    'id' => $item->id,
+                    'name' => $student_name,
+                    'avatar' => $student_avatar,
+                    'status' => Questions::STATUS[$item->status],
+                    'date' => $date,
+                    'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
+                ];
+            });
+        }
+
 
         return $this->success($data);
     }
