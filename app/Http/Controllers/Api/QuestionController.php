@@ -280,20 +280,19 @@ class QuestionController extends BaseController
                 $date = new Carbon($item->created_at);
                 $date = $date->format('Y/m/d H:i');
 
-                $teacher_name = NULL;
-                $teacher_avatar = NULL;
                 if ($item->teacher_id) {
                     $teacher_name = $item->teacher->name;
                     $teacher_avatar = env('CDN_DOMAIN') . '/haolaoshi/' . $item->teacher->avatar;
+
+                    $data[] = [
+                        'id' => $item->id,
+                        'name' => $teacher_name,
+                        'avatar' => $teacher_avatar,
+                        'status' => Questions::STATUS[$item->status],
+                        'date' => $date,
+                        'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
+                    ];
                 }
-                $data[] = [
-                    'id' => $item->id,
-                    'name' => $teacher_name,
-                    'avatar' => $teacher_avatar,
-                    'status' => Questions::STATUS[$item->status],
-                    'date' => $date,
-                    'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
-                ];
             });
         } else { // 老师
             $questions = Questions::with('user')->where('teacher_id', $user_id)->get();
