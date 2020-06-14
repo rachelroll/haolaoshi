@@ -224,7 +224,7 @@ class QuestionController extends BaseController
             $wxpay = new WeChatController();
             $result = $wxpay->unifiedOrder($res->id, 2000, $user->openid);
 
-            return $this->success('提交成功');
+            return $this->success($result);
         }
     }
 
