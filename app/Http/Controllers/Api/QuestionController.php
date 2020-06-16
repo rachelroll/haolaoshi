@@ -225,7 +225,7 @@ class QuestionController extends BaseController
             $result = $wxpay->unifiedOrder($res->id, 2000, $user->openid);
 
             $timeStamp = now();
-            $pay_sign = MD5('appId='.config('wechat.payment.default.app_id').'&nonceStr='. $result->nonce_str.'&package=prepay_id='. $result->prepay_id.'&signType=MD5&timeStamp='.$timeStamp.'&key='. config('wechat.payment.default.key'));
+            $pay_sign = MD5('appId='.config('wechat.payment.default.app_id').'&nonceStr='. $result['nonce_str'].'&package=prepay_id='. $result['prepay_id'].'&signType=MD5&timeStamp='.$timeStamp.'&key='. config('wechat.payment.default.key'));
 
             return $this->success(compact('result', 'timeStamp', 'pay_sign'));
             //if ($result->result_code == 'SUCCESS') {
