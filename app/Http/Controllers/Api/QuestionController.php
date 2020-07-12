@@ -100,6 +100,7 @@ class QuestionController extends BaseController
                     'ctype',
                     'question_id',
                     'created_at',
+                    'user_id'
                 ])->orderBy('created_at', 'DESC');
             },
             //'teacher' => function ($query) {
@@ -118,6 +119,9 @@ class QuestionController extends BaseController
         $date = new Carbon($question->created_at);
         $date = $date->format('Y/m/d H:i');
 
+        $teacher_id = $question->teacher_id;
+        $user = User::where('teacher_id', $teacher_id)->first();
+
         $first_question = [
             'photos' => $pics,
             'id' => $question->id,
@@ -127,6 +131,7 @@ class QuestionController extends BaseController
             'subject_id' => $question->subject_id,
             'thumbs' => $question->thumbs,
             'created_at' => $date,
+            'teacher_avatar' => $user->avatar,
         ];
 
         $data = [
