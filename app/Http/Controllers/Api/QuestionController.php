@@ -547,10 +547,12 @@ class QuestionController extends BaseController
     public function teacherConfirmToAnswer()
     {
         $question_id = request()->get('question_id', '');
-
-        $question = Questions::where('id', $question_id)->update([
-            'teacher_id', request()->user()->id
-        ]);
+        $question = Questions::find($question_id);
+        $question->teacher_id = request()->user()->id;
+        $question->save();
+        //$question = Questions::where('id', $question_id)->update([
+        //    'teacher_id' => request()->user()->id
+        //]);
 
         $student_id = $question->user_id;
 
@@ -575,14 +577,14 @@ class QuestionController extends BaseController
                         'value' => '如有疑问' // 温馨提示
                     ],
                     'date6' => [
-                        'value' => date('Y-m-d', $question->created_at)  // 提问时间
+                        'value' => date('Y-m-d', strtotime($question->created_at))  // 提问时间
                     ]
                 ],
             ];
 
-            $config = config('wechat.payment.default');
+            $config = config('wechat.mini_program.default');
 
-            $app = Factory::payment($config);
+            $app = Factory::miniProgram($config);
 
             $app->subscribe_message->send($data);
 
