@@ -99,6 +99,7 @@ class TeacherController extends BaseController
         }
     }
 
+    // 请求老师表单
     public function registerCreate()
     {
         $educated = Teacher::EDUCATED;

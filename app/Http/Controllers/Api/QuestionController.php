@@ -121,7 +121,7 @@ class QuestionController extends BaseController
 
         $teacher_id = $question->teacher_id;
         $user = User::where('teacher_id', $teacher_id)->first();
-
+        
         $first_question = [
             'photos' => $pics,
             'id' => $question->id,
