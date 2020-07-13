@@ -31,56 +31,79 @@ class QuestionController extends BaseController
 
         if ($role == 1) { // 学生
             $questions = Questions::has('answers', '>=', 1)->where($condition)->get();
-        } elseif ($role == 0) {
-            $questions = Questions::doesntHave('answers')->where($condition)->orderBy('id', 'DESC')->get();
-        }
+            $data = [];
+            $questions->where('type',0)->chunk(2)->each(static function ($i)  use (&$data) {
+                $tmp = [];
+                $i->each(static function ($item) use (&$tmp) {
+                    $tmp['created_at'] = $item->created_at;
+                    $tmp['type'] = 0;
+                    $tmp[] = [
+                        'id'    => $item->id,
+                        'content'    => $item->content,
+                        'teacher_id' => $item->teacher_id,
+                        'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
+                        'thumbs'     => $item->thumbs,
+                        'created_at' => $item->created_at,
+                        'type'       => $item->type,
+                        'grade'      => Questions::GRADE[$item->grade],
+                        'price'      => $item->total_price
+                    ];
 
-        $data = [];
-        $questions->where('type',0)->chunk(2)->each(static function ($i)  use (&$data) {
-            $tmp = [];
-            $i->each(static function ($item) use (&$tmp) {
-                $tmp['created_at'] = $item->created_at;
-                $tmp['type'] = 0;
-                $tmp[] = [
-                    'id'    => $item->id,
+                });
+                $data[] = $tmp;
+            });
+
+            $questions->whereNotIn('type',0)->each(static function ($item) use (&$data){
+
+                $pics = [];
+                foreach ($item->photos as $val) {
+                    $pics[] = env('CDN_DOMAIN') . '/haolaoshi/' . $val;
+                }
+
+                $data[] = [
+                    'id'         => $item->id,
                     'content'    => $item->content,
                     'teacher_id' => $item->teacher_id,
                     'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
+                    'pics'       => $pics,
                     'thumbs'     => $item->thumbs,
                     'created_at' => $item->created_at,
                     'type'       => $item->type,
                     'grade'      => Questions::GRADE[$item->grade],
                     'price'      => $item->total_price
                 ];
-
             });
-            $data[] = $tmp;
-        });
 
-        $questions->whereNotIn('type',0)->each(static function ($item) use (&$data){
+            $data = collect($data)->sortByDesc('created_at')->values();
 
-            $pics = [];
-            foreach ($item->photos as $val) {
-                $pics[] = env('CDN_DOMAIN') . '/haolaoshi/' . $val;
-            }
+            return $this->success($data);
+        } elseif ($role == 0) { // 老师
+            $questions = Questions::doesntHave('answers')->where($condition)->orderBy('id', 'DESC')->get();
+            $data = [];
+            $questions->each(static function ($item) use (&$data){
+                $pics = [];
+                foreach ($item->photos as $val) {
+                    $pics[] = env('CDN_DOMAIN') . '/haolaoshi/' . $val;
+                }
 
-            $data[] = [
-                'id'         => $item->id,
-                'content'    => $item->content,
-                'teacher_id' => $item->teacher_id,
-                'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
-                'pics'       => $pics,
-                'thumbs'     => $item->thumbs,
-                'created_at' => $item->created_at,
-                'type'       => $item->type,
-                'grade'      => Questions::GRADE[$item->grade],
-                'price'      => $item->total_price
-            ];
-        });
+                $data[] = [
+                    'id'         => $item->id,
+                    'content'    => $item->content,
+                    'teacher_id' => $item->teacher_id,
+                    'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
+                    'pics'       => $pics,
+                    'thumbs'     => $item->thumbs,
+                    'created_at' => $item->created_at,
+                    'type'       => $item->type,
+                    'grade'      => Questions::GRADE[$item->grade],
+                    'price'      => $item->total_price
+                ];
+            });
 
-        $data = collect($data)->sortByDesc('created_at')->values();
+            $data = collect($data)->sortByDesc('created_at')->values();
 
-        return $this->success($data);
+            return $this->success($data);
+        }
     }
 
     /**
