@@ -101,7 +101,7 @@ class QuestionController extends BaseController
                     'question_id',
                     'created_at',
                     'user_id'
-                ])->orderBy('created_at', 'DESC');
+                ])->orderBy('created_at', 'ASC');
             },
             //'teacher' => function ($query) {
             //    $query->select([
@@ -121,7 +121,7 @@ class QuestionController extends BaseController
 
         $teacher_id = $question->teacher_id;
         $user = User::where('teacher_id', $teacher_id)->first();
-        
+
         $first_question = [
             'photos' => $pics,
             'id' => $question->id,
@@ -137,8 +137,8 @@ class QuestionController extends BaseController
         $data = [
             'question' => $first_question
         ];
-
-        $question->answers->each(static function ($item) use (&$data) {
+        $times = 1;
+        $question->answers->each(static function ($item) use (&$data, &$times) {
             $date = new Carbon($item->created_at);
             $date = $date->format('Y-m-d H:i');
             $content = '';
@@ -153,6 +153,9 @@ class QuestionController extends BaseController
                     $content = env('CDN_DOMAIN') . '/haolaoshi/voice' . $item->content;
                     break;
             }
+            if ($item->type == 1) {
+                $times++;
+            }
             $data['answers'][] = [
                 'content'     => $content,
                 'type'        => $item->type,
@@ -160,6 +163,7 @@ class QuestionController extends BaseController
                 'question_id' => $item->question_id,
                 'created_at'  => $date,
                 'ctype' => $item->ctype,
+                'times' => $times,
             ];
         });
 
