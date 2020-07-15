@@ -309,7 +309,7 @@ class QuestionController extends BaseController
     // 学生/老师查看自己的答疑列表
     public function orderList()
     {
-        $role = request()->get('role', 1);
+        $role = request()->get('role', 1); // 1: 学生 | 0: 老师
         $user_id = request()->user()->id;
 
         if($role) { // 学生
@@ -357,7 +357,7 @@ class QuestionController extends BaseController
         return $this->success($data);
     }
 
-    // 学生查看自己的答疑详情
+    // 学生/老师查看自己的答疑详情
     public function orderShow($id)
     {
         $question = Questions::with([
