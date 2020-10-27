@@ -58,4 +58,4 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 });
 
 // 微信支付回调
-Route::post('wechat/wechat-notify', 'WechatController@wechat-notify')->name('wechat.wechat-notify');
+Route::post('wechat/wechat-notify', 'WechatController@wechatNotify')->name('wechat.wechat-notify');
