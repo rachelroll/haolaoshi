@@ -81,6 +81,8 @@ class TeacherController extends BaseController
                     'grade' => json_encode(request()->grades),
                     'special' => request()->specialPoints,
                     'result' => request()->results,
+                    'created_at' => now(),
+                    'name' => request()->real_name,
                 ]
             );
 

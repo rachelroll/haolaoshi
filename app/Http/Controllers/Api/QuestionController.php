@@ -255,7 +255,7 @@ class QuestionController extends BaseController
 
         if ($res) {
             $wxpay = new WeChatController();
-            $result = $wxpay->unifiedOrder($res->id, 2000, $user->openid);
+            $result = $wxpay->unifiedOrder($res->id, 1, $user->openid);
 
             if ($result['result_code'] == 'SUCCESS') {
                 $timeStamp = '"'.time().'"';
