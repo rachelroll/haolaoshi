@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 use EasyWeChat\Factory;
 use Illuminate\Support\Facades\Log;
 
-class WeChatController extends Controller
+class WeChatController extends BaseController
 {
     //
     public function unifiedOrder($order_id, $total_fee, $openid)
@@ -27,6 +27,7 @@ class WeChatController extends Controller
 
     public function wechatNotify()
     {
+        dd(222);
         $config = config('wechat.payment.default');
 
         $app = Factory::payment($config);

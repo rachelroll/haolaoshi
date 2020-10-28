@@ -31,6 +31,8 @@ Route::prefix('v1')->namespace('Api')->group(function () {
     // 注册
     Route::post('auth/login', 'AuthController@login')->name('api.auth.login');
 
+    // 微信支付回调
+    Route::post('wechat/wechat-notify', 'WechatController@wechatNotify')->name('wechat.wechat-notify');
 
 
     Route::middleware('auth:api')->group(function () {
@@ -57,5 +59,4 @@ Route::prefix('v1')->namespace('Api')->group(function () {
     });
 });
 
-// 微信支付回调
-Route::namespace('Api')->post('wechat/wechat-notify', 'WechatController@wechatNotify')->name('wechat.wechat-notify');
+
