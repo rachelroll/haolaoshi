@@ -31,6 +31,7 @@ class WeChatController extends Controller
 
         $app = Factory::payment($config);
 
+
         $response = $app->handlePaidNotify(function ($message, $fail) {
             // 你的逻辑
             //return true;
