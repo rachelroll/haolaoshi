@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 use EasyWeChat\Factory;
 use Illuminate\Support\Facades\Log;
 
-class WeChatController extends BaseController
+class WechatController extends BaseController
 {
     //
     public function unifiedOrder($order_id, $total_fee, $openid)
