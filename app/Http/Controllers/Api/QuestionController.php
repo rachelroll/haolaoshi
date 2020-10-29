@@ -250,6 +250,8 @@ class QuestionController extends BaseController
             'published' => $published,
             'type' => $type,
             'grade' => $user->grade,
+            'total_price' => 200,
+            'wait_paid_fee' => 200
         ]);
 
         if ($res) {

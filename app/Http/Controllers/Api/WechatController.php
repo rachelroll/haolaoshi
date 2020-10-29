@@ -46,10 +46,11 @@ class WechatController extends BaseController
                 if ($message['result_code'] === 'SUCCESS') {
                     $order->updated_at = time(); // 更新支付时间为当前时间
                     $order->status = 1;
+                    $order->paid_fee = $message['total_fee'];
 
                     // 用户支付失败
                 } elseif ($message['result_code'] === 'FAIL') {
-                    $order->status = 2;
+                    $order->status = 0;
                 }
             } else {
                 return $fail('通信失败，请稍后再通知我');
