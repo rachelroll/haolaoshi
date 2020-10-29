@@ -27,7 +27,6 @@ class WechatController extends BaseController
 
     public function wechatNotify()
     {
-        dd(222);
         $config = config('wechat.payment.default');
 
         $app = Factory::payment($config);

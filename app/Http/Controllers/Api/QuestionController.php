@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Answer;
-use App\Http\Controllers\WeChatController;
 use App\Questions;
 use App\User;
 use Carbon\Carbon;
@@ -254,7 +253,7 @@ class QuestionController extends BaseController
         ]);
 
         if ($res) {
-            $wxpay = new WeChatController();
+            $wxpay = new WechatController();
             $result = $wxpay->unifiedOrder($res->id, 1, $user->openid);
 
             if ($result['result_code'] == 'SUCCESS') {
