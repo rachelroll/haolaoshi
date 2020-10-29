@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use App\Questions;
 use EasyWeChat\Factory;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Console\Question\Question;
 
 class WechatController extends BaseController
 {
@@ -35,7 +35,7 @@ class WechatController extends BaseController
         $response = $app->handlePaidNotify(function ($message, $fail) {
             Log::info($message);
 
-            $order = Question::where('id', $message['out_trade_no'])->get();
+            $order = Questions::find( $message['out_trade_no']);
 
             if (!$order || $order->status == 1) { // 如果订单不存在 或者 订单已经支付过了
                 return true; // 告诉微信，我已经处理完了，订单没找到，别再通知我了
