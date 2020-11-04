@@ -6,6 +6,7 @@ use App\Teacher;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class TeacherController extends BaseController
@@ -110,5 +111,44 @@ class TeacherController extends BaseController
         $title = Teacher::TITLE;
 
         return $this->success(compact('educated', 'teachingAges', 'title'));
+    }
+
+    // 照片存储
+    public function photoSave(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'photo' => 'mimes:jpeg,bmp,png,jpg',
+        ],[
+            'photo.mimes'=>'图片格式错误'
+        ]);
+
+        if($validator->fails()){
+            return $this->failed($validator->messages(), 200);
+        }
+
+        $file = $request->file('img');
+
+        if ($file->isValid()) {
+            //$extension=$file->getClientOriginalExtension();
+            $path = $file->getRealPath();
+            $filename = 'haolaoshi/teachers' . date('Y-m-d-h-i-s') . '-' . $file->getClientOriginalName();
+
+            $bool = Storage::disk('oss')->put($filename, file_get_contents($path));
+
+            if ($bool) {
+                return [
+                    'success' => true,
+                    'msg'     => '上传成功',
+                    'url'     =>  env('CDN_DOMAIN') . '/' . $filename,
+                    'filename' => $filename,
+                ];
+            }
+
+            return [
+                'success'   => false,
+                'msg'       => '上传失败,请联系管理员',
+                'file_path' => '',
+            ];
+        }
     }
 }

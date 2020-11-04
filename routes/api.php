@@ -55,6 +55,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 
         // 老师注册表单提交
         Route::post('teacher/register', 'TeacherController@register')->name('api.teacher.register');
+        Route::post('teacher/photoSave', 'TeacherController@photoSave')->name('api.teacher.photoSave');
         // 老师表单创建
         Route::get('teacher/registerCreate', 'TeacherController@registerCreate')->name('api.teacher.registerCreate');
     });
