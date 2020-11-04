@@ -83,4 +83,23 @@ class UserController extends BaseController
 
         return $this->success($grade);
     }
+
+    // 完善更新用户信息
+    public function update()
+    {
+        $user_id = request()->user()->id;
+        $user = User::where('id', $user_id)->update([
+            'nickname' => request()->nickName,
+            'avatar' => request()->avatarUrl,
+            'province' => request()->province,
+            'city' => request()->city,
+            'gender' => request()->gender
+        ]);
+
+        if ($user) {
+            return $this->success('ok');
+        } else {
+            return $this->failed('更新失败');
+        }
+    }
 }

@@ -48,6 +48,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 
         Route::post('users/roleCreate', 'UserController@roleCreate')->name('api.users.roleCreate');
         Route::post('users/setting', 'UserController@setting')->name('api.users.setting');
+        Route::post('users/update', 'UserController@update')->name('api.users.update');
         Route::get('users/getRole', 'UserController@getRole')->name('api.users.getRole');
         Route::get('users/getGrade', 'UserController@getGrade')->name('api.users.getGrade');
         Route::post('auth/checkToken', 'AuthController@checkToken')->name('api.auth.checkToken');
