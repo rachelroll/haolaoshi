@@ -117,16 +117,16 @@ class TeacherController extends BaseController
     public function photoSave(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'photo' => 'mimes:jpeg,bmp,png,jpg',
+            'teacher_photo' => 'mimes:jpeg,bmp,png,jpg',
         ],[
-            'photo.mimes'=>'图片格式错误'
+            'teacher_photo.mimes'=>'图片格式错误'
         ]);
 
         if($validator->fails()){
             return $this->failed($validator->messages(), 200);
         }
 
-        $file = $request->file('img');
+        $file = $request->file('teacher_photo');
 
         if ($file->isValid()) {
             //$extension=$file->getClientOriginalExtension();
