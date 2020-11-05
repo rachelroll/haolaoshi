@@ -66,6 +66,7 @@ class TeacherController extends BaseController
                 'special' => request()->specialPoints,
                 'result' => request()->results,
                 'name' => request()->real_name,
+                'avatar' => request()->avatar,
             ]);
 
             if ($res) {
@@ -85,6 +86,7 @@ class TeacherController extends BaseController
                     'result' => request()->results,
                     'created_at' => now(),
                     'name' => request()->real_name,
+                    'avatar' => request()->avatar,
                 ]
             );
 
@@ -131,7 +133,7 @@ class TeacherController extends BaseController
         if ($file->isValid()) {
             //$extension=$file->getClientOriginalExtension();
             $path = $file->getRealPath();
-            $filename = 'haolaoshi/teachers' . date('Y-m-d-h-i-s') . '-' . $file->getClientOriginalName();
+            $filename = 'haolaoshi/teachers/' . date('Y-m-d-h-i-s') . '-' . $file->getClientOriginalName();
 
             $bool = Storage::disk('oss')->put($filename, file_get_contents($path));
 
