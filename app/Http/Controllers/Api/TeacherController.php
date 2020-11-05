@@ -138,19 +138,10 @@ class TeacherController extends BaseController
             $bool = Storage::disk('oss')->put($filename, file_get_contents($path));
 
             if ($bool) {
-                return [
-                    'success' => true,
-                    'msg'     => '上传成功',
-                    'url'     =>  env('CDN_DOMAIN') . '/' . $filename,
-                    'filename' => $filename,
-                ];
+                return $this->success($filename);
             }
 
-            return [
-                'success'   => false,
-                'msg'       => '上传失败,请联系管理员',
-                'file_path' => '',
-            ];
+            return $this->failed('上传失败');
         }
     }
 }
