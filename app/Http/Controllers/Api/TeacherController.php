@@ -66,7 +66,7 @@ class TeacherController extends BaseController
                 'special' => request()->specialPoints,
                 'result' => request()->results,
                 'name' => request()->real_name,
-                'avatar' => request()->avatar,
+                'photo' => request()->avatar,
             ]);
 
             if ($res) {
@@ -86,7 +86,7 @@ class TeacherController extends BaseController
                     'result' => request()->results,
                     'created_at' => now(),
                     'name' => request()->real_name,
-                    'avatar' => request()->avatar,
+                    'photo' => request()->avatar,
                 ]
             );
 

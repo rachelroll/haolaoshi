@@ -315,7 +315,6 @@ class QuestionController extends BaseController
 
         if($role) { // 学生
             $questions = Questions::with('teacher')->where('user_id', $user_id)->get();
-
             $data = [];
             $questions->each(static function ($item) use(&$data) {
                 $date = new Carbon($item->created_at);
@@ -323,12 +322,19 @@ class QuestionController extends BaseController
 
                 if ($item->teacher_id) {
                     $teacher_name = $item->teacher->name;
-                    $teacher_avatar = env('CDN_DOMAIN') . '/haolaoshi/' . $item->teacher->avatar;
+                    $teacher_photo = env('CDN_DOMAIN') . '/' . $item->teacher->photo;
 
                     $data[] = [
                         'id' => $item->id,
                         'name' => $teacher_name,
-                        'avatar' => $teacher_avatar,
+                        'photo' => $teacher_photo,
+                        'status' => Questions::STATUS[$item->status],
+                        'date' => $date,
+                        'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
+                    ];
+                } else {
+                    $data[] = [
+                        'id' => $item->id,
                         'status' => Questions::STATUS[$item->status],
                         'date' => $date,
                         'subject'    => Questions::SUBJECT_NAME[ $item->subject_id ],
