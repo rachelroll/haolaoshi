@@ -399,7 +399,7 @@ class QuestionController extends BaseController
 
         $msgs[] = [
             'ctype' => 1,
-            'face' => env('CDN_DOMAIN') . '/haolaoshi/' . $question->user->avatar,
+            'face' => $question->user->avatar,
             'msg' => $question->content,
             'name' => $question->user->nickname,
             'date' => $date,
@@ -421,6 +421,7 @@ class QuestionController extends BaseController
             'question_id' => $id,
             'type' => 1,
         ])->count();
+
         $i = 2;
 
         $question->answers->each(static function ($item) use (&$msgs, $question, $count, &$i) {
@@ -428,23 +429,23 @@ class QuestionController extends BaseController
             $date = $date->format('Y/m/d H:i');
             $user_id = $item->user_id;
             $name = $item->user->nickname;
-            $face = env('CDN_DOMAIN') . '/haolaoshi/' . $question->user->avatar;
-            if($item->type == 1) {
+            $face = $question->user->avatar;
+            if($item->type == 1) { // type = 1 表示是学生的继续提问, 就要加上是第几次提问的提示
                 if ($i <= $count + 1) {
                     $msgs[] = [
-                        'ctype' => 4,
-                        'face' => $face,
+                        'ctype' => 4, // 表示系统消息
+                        //'face' => $face,
                         'msg' => '第 ' . $i . ' 次提问',
                     ];
                     $i++;
                 }
             }
 
-            if ($item->ctype == 2) {
+            if ($item->ctype == 2) { // 图片消息
                 $msg = env('CDN_DOMAIN') . '/haolaoshi/' . $item->content;
-            } elseif ($item->ctype == 3) {
+            } elseif ($item->ctype == 3) { // 语音消息
                 $msg = $item->content;
-            } else {
+            } else { // 文字消息
                 $msg = $item->content;
             }
 
